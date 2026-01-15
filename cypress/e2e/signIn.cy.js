@@ -4,15 +4,8 @@ const username = 'tomsmith';
 const pw = 'SuperSecretPassword!';
 
 describe('Sign In page', () => {
-  beforeEach(() => {
-    cy.visit('/login');
-  });
-
   it('should sign in with correct creds', () => {
-    cy.get('#username').type(username);
-    cy.get('#password').type(pw);
-    cy.get('.radius').click();
-
+    cy.login(username, pw);
     cy.url().should('include', '/secure');
 
     cy.get('.flash.success')
@@ -21,10 +14,7 @@ describe('Sign In page', () => {
   });
 
   it(`shouldn't sign in with incorrect creds`, () => {
-    cy.get('#username').type('tom');
-    cy.get('#password').type('tom');
-    cy.get('.radius').click();
-
+    cy.login('tom', 'Super');
     cy.url().should('include', '/login');
 
     cy.get('.flash.error')
@@ -35,20 +25,11 @@ describe('Sign In page', () => {
 
 describe('Sign Out page', () => {
   beforeEach(() => {
-    cy.visit('/login');
-    cy.get('#username').type(username);
-    cy.get('#password').type(pw);
-    cy.get('.radius').click();
-
+    cy.login(username, pw);
     cy.url().should('include', '/secure');
-
-    cy.get('.flash.success')
-      .should('be.visible')
-      .and('contain', 'You logged into a secure area!');
   });
 
   it('should sign out', () => {
-    cy.url().should('include', '/secure');
     cy.get('.button.secondary.radius').click();
 
     cy.get('.flash.success')
